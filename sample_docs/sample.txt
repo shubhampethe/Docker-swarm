@@ -1,0 +1,27 @@
+# Project E-Market: Next-Generation Decentralized Commerce Architecture
+
+## 1. Executive Summary
+Project E-Market is a high-throughput, microservices-driven decentralized commerce engine built to handle over 100,000 transactions per second (TPS) with sub-10ms query latency. It leverages an event-driven architecture powered by Apache Kafka, Redis enterprise caching, and a distributed vector retrieval system for personalized real-time item recommendations.
+
+## 2. Core Architecture Components
+The platform is subdivided into five decoupled domains:
+1. User Authentication & KYC Service: Built with OAuth2.0 and biometric passkey authentication.
+2. Product Catalog Engine: Uses Qdrant and Chroma vector databases for hybrid dense-sparse semantic search.
+3. Order Matching & Settlement Engine: High-performance Rust-based orderbook processing limit, market, and stop-loss orders.
+4. Real-time Inventory Tracker: Distributed ledger using optimistic locking with Redis Redlock algorithm.
+5. Notification & Event Streaming: Asynchronous event ingestion via Kafka topics with avro schema registry.
+
+## 3. Storage and Database Tier
+The data persistence strategy follows polyglot persistence:
+- PostgreSQL 16: Primary relational database for transactional customer account data and ledger accounting.
+- Chroma Vector Database: High-density vector storage for item embeddings and multimodal product search.
+- Redis Cluster: L1 in-memory cache for hot product listings with an average TTL of 120 seconds.
+- AWS S3 / MinIO: Object storage for high-resolution product photography, invoices, and compliance documentation.
+
+## 4. Disaster Recovery and SLA Requirements
+- Recovery Point Objective (RPO): Less than 1 second across multi-region active-passive failover clusters.
+- Recovery Time Objective (RTO): 30 seconds automated DNS switchover via Cloudflare and Route53.
+- Service Level Agreement (SLA): 99.995% monthly uptime guarantee for core order placement APIs.
+
+## 5. Security & Compliance
+All internal gRPC communication is encrypted with mutual TLS (mTLS 1.3). Database tables containing PII are encrypted at rest with AES-256 keys managed by HashiCorp Vault. The system complies with PCI-DSS Level 1 and SOC2 Type II certifications.

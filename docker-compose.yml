@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+
+  embedding-service:
+    build:
+      context: ./embedding_service
+      dockerfile: Dockerfile
+    image: custom-embedding-service:latest
+    ports:
+      - target: 8001
+        published: 8001
+        protocol: tcp
+        mode: ingress
+    environment:
+      - MODEL_NAME=sentence-transformers/all-MiniLM-L6-v2
+    deploy:
+      mode: replicated
+      replicas: 1  
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      update_config:
+        parallelism: 1
+        delay: 5s
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 3072M
+        reservations:
+          cpus: '0.2'
+          memory: 256M
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 15s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
